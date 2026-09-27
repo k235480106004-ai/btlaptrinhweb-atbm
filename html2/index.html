@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cổng Mã Hóa & Chữ Ký Số - Vũ Thế Anh</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsencrypt/3.3.2/jsencrypt.min.js"></script>
+    <style>
+        body { font-family: 'Courier New', monospace; background: #0b0f19; color: #f59e0b; margin: 0; padding: 25px; }
+        .shell { max-width: 850px; margin: auto; background: #111827; border: 1px solid #374151; padding: 25px; border-radius: 10px; box-shadow: 0 0 20px rgba(245, 158, 11, 0.15); }
+        h1 { text-align: center; color: #fbbf24; font-size: 22px; border-bottom: 2px dashed #374151; padding-bottom: 15px; }
+        .sec-box { background: #1f2937; padding: 18px; border-radius: 6px; margin-bottom: 20px; border-left: 4px solid #f59e0b; }
+        h2 { margin-top: 0; color: #fef08a; font-size: 16px; }
+        input, textarea { width: 100%; background: #111827; border: 1px solid #4b5563; color: #38bdf8; padding: 10px; border-radius: 4px; box-sizing: border-box; margin: 6px 0 12px; }
+        button { background: #f59e0b; color: #111827; border: none; padding: 10px 18px; font-weight: bold; cursor: pointer; border-radius: 4px; margin-right: 5px; }
+        .out { background: #000; color: #4ade80; padding: 10px; border-radius: 4px; word-break: break-all; min-height: 24px; font-size: 13px; border: 1px solid #1f2937; }
+    </style>
+</head>
+<body>
+<div class="shell">
+    <h1>[SECURITY CONSOLE] XÁC THỰC BẢN QUYỀN ĐỒ ÁN & BẰNG CẤP</h1>
+    <p style="text-align: center; color: #9ca3af;">Tác giả: <b>Vũ Thế Anh (MSSV: K235480106004)</b></p>
+
+    <!-- AES MODULE -->
+    <div class="sec-box">
+        <h2>> 1. MÃ HÓA MÃ NGUỒN & BÁO CÁO ĐỒ ÁN (AES-256 CBC)</h2>
+        <label>Nội dung cần mã hóa:</label>
+        <input type="text" id="aesText" value="Báo cáo Đồ án Lập trình Web & ATBM - Vũ Thế Anh K235480106004">
+        <label>Mật mã bảo vệ (Key):</label>
+        <input type="text" id="aesKey" value="VuTheAnhKey2026_Secure">
+        <button onclick="runAESEnc()">ENCRYPT AES</button>
+        <button onclick="runAESDec()" style="background: #6b7280; color: white;">DECRYPT AES</button>
+        <p>Ciphertext Output:</p>
+        <div id="aesOut" class="out">---</div>
+    </div>
+
+    <!-- RSA MODULE -->
+    <div class="sec-box">
+        <h2>> 2. CHỮ KÝ SỐ XÁC THỰC BẢNG ĐIỂM / BẰNG CẤP (RSA-1024)</h2>
+        <button onclick="genRSAKey()">TẠO CẶP KHÓA RSA</button><br><br>
+        <label>Public Key:</label>
+        <textarea id="pubKey" rows="3" readonly></textarea>
+        <label>Private Key:</label>
+        <textarea id="privKey" rows="3" readonly></textarea>
+        <label>Chữ ký số Bảng điểm:</label>
+        <input type="text" id="rsaText" value="Xác nhận sinh viên Vũ Thế Anh đạt điểm A môn ATBM">
+        <button onclick="runRSAEnc()">KÝ & MÃ HÓA PUBLIC KEY</button>
+        <button onclick="runRSADec()" style="background: #6b7280; color: white;">GIẢI MÃ PRIVATE KEY</button>
+        <p>Signature Result:</p>
+        <div id="rsaOut" class="out">---</div>
+    </div>
+</div>
+
+<script>
+    function runAESEnc() {
+        let t = document.getElementById('aesText').value;
+        let k = document.getElementById('aesKey').value;
+        document.getElementById('aesOut').innerText = CryptoJS.AES.encrypt(t, k).toString();
+    }
+    function runAESDec() {
+        let c = document.getElementById('aesOut').innerText;
+        let k = document.getElementById('aesKey').value;
+        try {
+            let bytes = CryptoJS.AES.decrypt(c, k);
+            document.getElementById('aesOut').innerText = bytes.toString(CryptoJS.enc.Utf8) || "Lỗi Key!";
+        } catch(e) { document.getElementById('aesOut').innerText = "Lỗi giải mã!"; }
+    }
+
+    let rsaEngine = new JSEncrypt({default_key_size: 1024});
+    function genRSAKey() {
+        document.getElementById('pubKey').value = "Đang sinh khóa...";
+        document.getElementById('privKey').value = "Đang sinh khóa...";
+        setTimeout(() => {
+            rsaEngine.getKey();
+            document.getElementById('pubKey').value = rsaEngine.getPublicKey();
+            document.getElementById('privKey').value = rsaEngine.getPrivateKey();
+        }, 100);
+    }
+    function runRSAEnc() {
+        rsaEngine.setPublicKey(document.getElementById('pubKey').value);
+        document.getElementById('rsaOut').innerText = rsaEngine.encrypt(document.getElementById('rsaText').value) || "Lỗi mã hóa!";
+    }
+    function runRSADec() {
+        rsaEngine.setPrivateKey(document.getElementById('privKey').value);
+        document.getElementById('rsaOut').innerText = rsaEngine.decrypt(document.getElementById('rsaOut').innerText) || "Lỗi giải mã!";
+    }
+</script>
+</body>
+</html>

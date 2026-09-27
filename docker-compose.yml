@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  nginx_proxy:
+    image: nginx:alpine
+    container_name: nginx_vutheanh
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./html1:/usr/share/nginx/html/site1
+      - ./html2:/usr/share/nginx/html/site2
+      - ./nginx/conf.d:/etc/nginx/conf.d
+    networks:
+      - app_net
+
+  nodered_backend:
+    image: nodered/node-red:latest
+    container_name: nodered_vutheanh
+    restart: always
+    ports:
+      - "1880:1880"
+    networks:
+      - app_net
+
+  database_db:
+    image: mariadb:latest
+    container_name: mariadb_vutheanh
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root_vutheanh
+      MYSQL_DATABASE: med_db
+    networks:
+      - app_net
+
+networks:
+  app_net:
+    driver: bridge
