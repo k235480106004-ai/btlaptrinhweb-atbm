@@ -1,4 +1,4 @@
-# ĐỒ ÁN CỔNG ĐĂNG KÝ HỌC PHẦN VÀ BẢO MẬT BẰNG CẤP
+
 
 - **Sinh viên thực hiện:** Vũ Thế Anh
 - **Mã số sinh viên:** K235480106004
